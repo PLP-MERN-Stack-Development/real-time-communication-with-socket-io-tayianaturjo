@@ -1,77 +1,98 @@
-# Real-Time Chat Application with Socket.io
+# Real-Time Chat Application with Socket.IO and React
 
-This assignment focuses on building a real-time chat application using Socket.io, implementing bidirectional communication between clients and server.
+## Project Overview
 
-## Assignment Overview
+This project is a **real-time chat application** built using **React.js** for the frontend and **Node.js + Express + Socket.IO** for the backend. The app allows multiple users to chat in **rooms**, send **private messages**, view **online users**, and see **typing indicators** in real-time. It demonstrates the implementation of real-time communication, state management with React context, and handling user presence effectively.
 
-You will build a chat application with the following features:
-1. Real-time messaging using Socket.io
-2. User authentication and presence
-3. Multiple chat rooms or private messaging
-4. Real-time notifications
-5. Advanced features like typing indicators and read receipts
+---
+
+## Features
+
+1. **Real-Time Messaging**  
+   - Send and receive messages instantly across all connected clients.  
+   - Messages can be global or restricted to specific chat rooms.
+
+2. **Room-Based Chat**  
+   - Users can join multiple rooms (e.g., `global`, `sports`, `tech`).  
+   - Messages are broadcasted to users in the same room only.
+
+3. **Private Messaging**  
+   - Users can send direct messages to other users privately.
+
+4. **Online Users List**  
+   - Displays all currently connected users in real-time.  
+   - Updates dynamically as users join or leave.
+
+5. **Typing Indicators**  
+   - Shows which users are currently typing a message in a room.
+
+6. **User Presence Handling**  
+   - Detects when users connect or disconnect.  
+   - Broadcasts `user_joined` and `user_left` events for awareness.
+
+7. **State Management**  
+   - Utilizes **React Context** and a custom `useSocket` hook for global socket state management.
+
+---
+
+## Tech Stack
+
+- **Frontend:** React.js, JSX, Tailwind CSS (or plain CSS if preferred)  
+- **Backend:** Node.js, Express.js, Socket.IO  
+- **Real-Time Communication:** Socket.IO  
+- **Environment Variables:** `dotenv`  
+- **Development Tools:** Nodemon for auto-restart, React DevTools  
+
+---
 
 ## Project Structure
 
-```
-socketio-chat/
-├── client/                 # React front-end
-│   ├── public/             # Static files
-│   ├── src/                # React source code
-│   │   ├── components/     # UI components
-│   │   ├── context/        # React context providers
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── pages/          # Page components
-│   │   ├── socket/         # Socket.io client setup
-│   │   └── App.jsx         # Main application component
-│   └── package.json        # Client dependencies
-├── server/                 # Node.js back-end
-│   ├── config/             # Configuration files
-│   ├── controllers/        # Socket event handlers
-│   ├── models/             # Data models
-│   ├── socket/             # Socket.io server setup
-│   ├── utils/              # Utility functions
-│   ├── server.js           # Main server file
-│   └── package.json        # Server dependencies
-└── README.md               # Project documentation
-```
+### Backend (`server/`)
+
+- **server.js**: Main server file handling Socket.IO events and HTTP routes.
+- **Users & Messages:** Stored in memory for demo purposes.
+- **API Endpoints:**  
+  - `/api/messages` → Get all messages  
+  - `/api/users` → Get all online users  
+
+Socket events handled:  
+- `connection`  
+- `user_join`  
+- `join_room` / `leave_room`  
+- `send_message`  
+- `private_message`  
+- `typing`  
+- `disconnect`  
+
+---
+
+### Frontend (`src/`)
+
+- **SocketProvider.jsx**: Provides the Socket.IO connection and socket state to the React app.  
+- **useSocket.js**: Custom hook managing socket events and states:  
+  - `messages`, `users`, `typingUsers`, `lastMessage`, `isConnected`  
+  - Methods: `connect`, `disconnect`, `sendMessage`, `sendPrivateMessage`, `setTyping`  
+
+- **ChatRoom.jsx**: Main chat interface  
+  - Displays messages, rooms, and online users  
+  - Allows sending messages, private messaging, and typing detection  
+
+- **MessageList.jsx**: Displays messages for the current room  
+- **MessageInput.jsx**: Input box for sending messages  
+- **UsersList.jsx**: Displays online users with private messaging option  
+
+---
 
 ## Getting Started
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Follow the setup instructions in the `Week5-Assignment.md` file
-4. Complete the tasks outlined in the assignment
+### Prerequisites
 
-## Files Included
+- Node.js v18+  
+- npm or yarn  
+- React environment (Vite or Create React App)
 
-- `Week5-Assignment.md`: Detailed assignment instructions
-- Starter code for both client and server:
-  - Basic project structure
-  - Socket.io configuration templates
-  - Sample components for the chat interface
+### Installation
 
-## Requirements
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Modern web browser
-- Basic understanding of React and Express
-
-## Submission
-
-Your work will be automatically submitted when you push to your GitHub Classroom repository. Make sure to:
-
-1. Complete both the client and server portions of the application
-2. Implement the core chat functionality
-3. Add at least 3 advanced features
-4. Document your setup process and features in the README.md
-5. Include screenshots or GIFs of your working application
-6. Optional: Deploy your application and add the URLs to your README.md
-
-## Resources
-
-- [Socket.io Documentation](https://socket.io/docs/v4/)
-- [React Documentation](https://react.dev/)
-- [Express.js Documentation](https://expressjs.com/)
-- [Building a Chat Application with Socket.io](https://socket.io/get-started/chat) 
+1. Clone the repository:
+```bash
+git clone <repository_url>

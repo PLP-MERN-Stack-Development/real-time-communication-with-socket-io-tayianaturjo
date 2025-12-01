@@ -1,5 +1,4 @@
-// socket.js - Socket.io client setup
-
+// socket.js
 import { io } from 'socket.io-client';
 import { useEffect, useState } from 'react';
 
@@ -15,100 +14,69 @@ export const socket = io(SOCKET_URL, {
 });
 
 // Custom hook for using socket.io
-export const useSocket = () => {
+export const useSocket = (username) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [lastMessage, setLastMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
 
-  // Connect to socket server
-  const connect = (username) => {
+  // Connect to socket server with username
+  const connect = () => {
     socket.connect();
     if (username) {
       socket.emit('user_join', username);
     }
   };
 
-  // Disconnect from socket server
+  // Disconnect
   const disconnect = () => {
     socket.disconnect();
   };
 
   // Send a message
-  const sendMessage = (message) => {
-    socket.emit('send_message', { message });
+  const sendMessage = ({ message, room }) => {
+    socket.emit('send_message', { message, room });
   };
 
-  // Send a private message
+  // Send private message
   const sendPrivateMessage = (to, message) => {
     socket.emit('private_message', { to, message });
   };
 
-  // Set typing status
-  const setTyping = (isTyping) => {
-    socket.emit('typing', isTyping);
+  // Set typing indicator
+  const setTyping = ({ isTyping, room }) => {
+    socket.emit('typing', { isTyping, room });
   };
 
   // Socket event listeners
   useEffect(() => {
-    // Connection events
-    const onConnect = () => {
-      setIsConnected(true);
-    };
+    connect();
 
-    const onDisconnect = () => {
-      setIsConnected(false);
-    };
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
 
-    // Message events
-    const onReceiveMessage = (message) => {
-      setLastMessage(message);
-      setMessages((prev) => [...prev, message]);
-    };
+    const onReceiveMessage = (msg) => setMessages((prev) => [...prev, msg]);
+    const onPrivateMessage = (msg) => setMessages((prev) => [...prev, msg]);
 
-    const onPrivateMessage = (message) => {
-      setLastMessage(message);
-      setMessages((prev) => [...prev, message]);
-    };
-
-    // User events
-    const onUserList = (userList) => {
-      setUsers(userList);
-    };
+    const onUserList = (userList) => setUsers(userList);
 
     const onUserJoined = (user) => {
-      // You could add a system message here
       setMessages((prev) => [
         ...prev,
-        {
-          id: Date.now(),
-          system: true,
-          message: `${user.username} joined the chat`,
-          timestamp: new Date().toISOString(),
-        },
+        { id: Date.now(), system: true, message: `${user.username} joined the chat`, timestamp: new Date().toISOString() },
       ]);
     };
 
     const onUserLeft = (user) => {
-      // You could add a system message here
       setMessages((prev) => [
         ...prev,
-        {
-          id: Date.now(),
-          system: true,
-          message: `${user.username} left the chat`,
-          timestamp: new Date().toISOString(),
-        },
+        { id: Date.now(), system: true, message: `${user.username} left the chat`, timestamp: new Date().toISOString() },
       ]);
     };
 
-    // Typing events
-    const onTypingUsers = (users) => {
-      setTypingUsers(users);
-    };
+    const onTypingUsers = (typingList) => setTypingUsers(typingList);
 
-    // Register event listeners
+    // Register listeners
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('receive_message', onReceiveMessage);
@@ -118,7 +86,7 @@ export const useSocket = () => {
     socket.on('user_left', onUserLeft);
     socket.on('typing_users', onTypingUsers);
 
-    // Clean up event listeners
+    // Cleanup
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
@@ -129,12 +97,11 @@ export const useSocket = () => {
       socket.off('user_left', onUserLeft);
       socket.off('typing_users', onTypingUsers);
     };
-  }, []);
+  }, [username]);
 
   return {
     socket,
     isConnected,
-    lastMessage,
     messages,
     users,
     typingUsers,
@@ -146,4 +113,4 @@ export const useSocket = () => {
   };
 };
 
-export default socket; 
+export default socket;
